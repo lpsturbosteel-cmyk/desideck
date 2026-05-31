@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desi Deck - 13 Card Rummy</title>
+    <title>Desi Deck - Pro 13-Card Rummy</title>
     <style>
         :root {
-            --bg-teal: #061a1b;
-            --surface-teal: #0d2d2f;
+            --bg-teal: #051415;
+            --surface-teal: #0b2628;
+            --mat-green: #0d4626;
             --accent-gold: #d97706;
             --accent-saffron: #f59e0b;
             --card-white: #ffffff;
             --text-light: #f3f4f6;
             --suit-red: #dc2626;
-            --suit-black: #1f2937;
+            --suit-black: #111827;
         }
 
         * {
@@ -32,7 +33,6 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 10px;
-            overflow-x: hidden;
         }
 
         header {
@@ -43,7 +43,7 @@
 
         header h1 {
             color: var(--accent-saffron);
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
@@ -51,46 +51,38 @@
         .status-banner {
             background: rgba(255, 255, 255, 0.05);
             text-align: center;
-            padding: 6px;
-            font-size: 0.85rem;
+            padding: 8px;
+            font-size: 0.9rem;
             border-radius: 6px;
             margin: 8px 0;
             color: var(--accent-saffron);
             font-weight: bold;
+            border-left: 4px solid var(--accent-gold);
         }
 
-        /* Opponent Area */
-        .ai-area {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px;
-            border-radius: 8px;
-        }
-        .ai-card-count {
-            font-size: 0.8rem;
-            color: #9ca3af;
-        }
-
-        /* Play Mat (Center Board) */
         .play-mat {
+            background: var(--mat-green);
+            border: 3px solid var(--accent-gold);
+            border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 25px;
-            margin: 20px 0;
+            gap: 40px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
         }
 
-        .pile-container {
-            text-align: center;
-        }
+        .pile-container { text-align: center; }
         .pile-label {
             font-size: 0.75rem;
-            color: #9ca3af;
+            color: #d1d5db;
             margin-bottom: 6px;
             text-transform: uppercase;
+            font-weight: bold;
         }
 
-        /* Playing Card Aesthetics */
+        /* Playing Card Styles */
         .game-card {
             width: 65px;
             height: 95px;
@@ -100,27 +92,16 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 6px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
             cursor: pointer;
-            transition: transform 0.2s ease, border 0.2s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
-
         .game-card.red { color: var(--suit-red); }
         .game-card.black { color: var(--suit-black); }
+        
+        .card-corner { font-size: 1.1rem; font-weight: bold; line-height: 1; }
+        .card-suit-center { font-size: 1.8rem; align-self: center; line-height: 1; }
 
-        .card-corner {
-            font-size: 1.1rem;
-            font-weight: bold;
-            line-height: 1;
-        }
-        .card-suit-center {
-            font-size: 1.8rem;
-            align-self: center;
-            line-height: 1;
-        }
-
-        /* Specialized Piles */
         .card-back {
             background: linear-gradient(135deg, #b45309, #78350f);
             border: 2px solid var(--accent-saffron);
@@ -128,115 +109,148 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
         }
 
-        .empty-pile {
-            border: 2px dashed rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+        /* Dynamic Meld/Grouping Interface CSS */
+        .dashboard-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--accent-saffron);
+            margin-left: 5px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .melds-container {
+            background: rgba(0,0,0,0.2);
+            border: 1px dashed rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .meld-group-row {
+            background: var(--surface-teal);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: #4b5563;
+            gap: 8px;
+            position: relative;
         }
 
-        /* Player Control Panel */
-        .controls-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
+        .meld-badge {
+            background: var(--accent-gold);
+            color: #000;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
         }
-        .btn {
+
+        .meld-cards { display: flex; gap: 6px; flex-grow: 1; overflow-x: auto; }
+
+        .btn-dissolve {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Unassigned Hand Space */
+        .hand-pool-section {
             background: var(--surface-teal);
+            padding: 12px;
+            border-radius: 12px;
+            border-top: 3px solid var(--accent-gold);
+        }
+
+        .hand-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 15px 4px;
+            min-height: 120px;
+        }
+
+        .hand-row .game-card.selected {
+            transform: translateY(-15px);
+            border: 3px solid var(--accent-saffron);
+            box-shadow: 0 8px 15px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: #1f2937;
             color: var(--text-light);
-            border: 1px solid var(--accent-gold);
-            padding: 8px 16px;
-            border-radius: 20px;
+            border: 1px solid #4b5563;
+            padding: 10px 12px;
+            border-radius: 8px;
             font-size: 0.85rem;
             font-weight: bold;
             cursor: pointer;
             flex: 1;
-            max-width: 130px;
             text-align: center;
         }
-        .btn-action {
-            background: linear-gradient(135deg, var(--accent-saffron), var(--accent-gold));
-            color: #000;
-            border: none;
-        }
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
 
-        /* Player Hand Grid Container */
-        .player-hand-container {
-            background: var(--surface-teal);
-            padding: 12px 6px;
-            border-radius: 12px 12px 0 0;
-            border-top: 2px solid var(--accent-gold);
-        }
-
-        .hand-scroll-wrapper {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 10px 4px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Target state when player taps a card to select it */
-        .player-hand-container .game-card.selected {
-            transform: translateY(-15px);
-            border: 3px solid var(--accent-saffron);
-            box-shadow: 0 10px 15px rgba(245, 158, 11, 0.4);
-        }
+        .btn-action { background: linear-gradient(135deg, var(--accent-saffron), var(--accent-gold)); color: #000; border: none; }
+        .btn-success { background: #22c55e; color: #fff; border: none; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Desi Deck Rummy</h1>
+        <h1>Desi Deck Rummy Pro</h1>
     </header>
 
-    <div class="status-banner" id="game-status">Game Loading...</div>
+    <div class="status-banner" id="game-status">Loading Rummy Arena...</div>
 
-    <!-- Opponent Area -->
-    <div class="ai-area">
-        <div class="ai-card-count">Opponent Bot: <span id="ai-count">13</span> Cards (Hidden)</div>
-    </div>
-
-    <!-- Center Board Mat -->
     <div class="play-mat">
         <div class="pile-container">
             <div class="pile-label">Stock Pile</div>
             <div class="game-card card-back" id="stock-pile" onclick="handleDraw('stock')">🎴</div>
         </div>
         <div class="pile-container">
-            <div class="pile-label">Discard</div>
-            <div id="discard-zone">
-                <!-- Injected via JavaScript dynamically -->
-            </div>
+            <div class="pile-label">Discard Pile</div>
+            <div id="discard-zone"></div>
         </div>
     </div>
 
-    <!-- Mid Panel Control Dashboard -->
-    <div class="controls-row">
-        <button class="btn" id="btn-sort" onclick="sortHand()">Auto Sort</button>
-        <button class="btn btn-action" id="btn-discard" onclick="executeDiscard()" disabled>Discard Selected</button>
-        <button class="btn" id="btn-declare" onclick="executeDeclare()">Declare Hand</button>
+    <div class="dashboard-label">Your Melds / Card Groups</div>
+    <div class="melds-container" id="melds-board">
+        </div>
+
+    <div class="controls-panel">
+        <button class="btn" id="btn-sort" onclick="autoSortPool()">Auto Sort</button>
+        <button class="btn btn-action" id="btn-group" onclick="createGroupFromSelected()" disabled>Group Selected</button>
+        <button class="btn btn-action" id="btn-discard" onclick="executeDiscard()" disabled>Discard Card</button>
+        <button class="btn btn-success" id="btn-declare" onclick="executeDeclare()">Declare Game</button>
     </div>
 
-    <!-- Player Interaction Sandbox -->
-    <div class="player-hand-container">
-        <div class="pile-label" style="text-align: center; margin-bottom: 4px;">Your 13-Card Hand (Tap card to select)</div>
-        <div class="hand-scroll-wrapper" id="player-hand-display">
-            <!-- Dynamic Injection Slot -->
-        </div>
+    <div class="hand-pool-section">
+        <div class="dashboard-label" style="text-align: center; color: #9ca3af;">Unassigned Cards Pool (<span id="pool-count">13</span>)</div>
+        <div class="hand-row" id="pool-cards-display"></div>
     </div>
 
     <script>
@@ -254,23 +268,19 @@
         ];
 
         let deck = [];
-        let playerHand = [];
-        let aiHand = [];
+        let cardPool = [];       // Cards currently unassigned to any groups
+        let cardGroups = [];     // Array of arrays holding user-created groups [[card, card], [card, card]]
         let discardPile = [];
-        
-        // Game State Engine Loops: 'DRAW', 'DISCARD', 'AI_TURN'
-        let currentTurnState = 'DRAW'; 
-        let selectedPlayerCardIndex = null;
+        let turnState = 'DRAW';  // 'DRAW' or 'DISCARD'
+        let selectedPoolIndices = [];
 
         function buildDeck() {
             deck = [];
             for (let suit of SUITS) {
                 for (let rank of RANKS) {
                     deck.push({
-                        suitIcon: suit.icon,
-                        suitColor: suit.color,
-                        rankName: rank.name,
-                        rankValue: rank.val
+                        suitIcon: suit.icon, suitColor: suit.color, suitLabel: suit.label,
+                        rankName: rank.name, rankValue: rank.val
                     });
                 }
             }
@@ -286,27 +296,23 @@
         function initGame() {
             buildDeck();
             shuffleDeck();
-
-            // Deal 13 structural cards to both entities
-            playerHand = [];
-            aiHand = [];
-            for(let i = 0; i < 13; i++) {
-                playerHand.push(deck.pop());
-                aiHand.push(deck.pop());
+            cardPool = [];
+            cardGroups = [];
+            selectedPoolIndices = [];
+            
+            // Deal exactly 13 cards to the player
+            for (let i = 0; i < 13; i++) {
+                cardPool.push(deck.pop());
             }
-
-            // Flip top card to launch the Discard Pile
+            
             discardPile = [deck.pop()];
-            
-            currentTurnState = 'DRAW';
-            selectedPlayerCardIndex = null;
-            
-            updateStatusText("Your Turn: Draw a card from Stock or Discard pile.");
-            renderBoard();
+            turnState = 'DRAW';
+            updateStatus("Your Turn: Draw a card from the Stock or Discard pile to start.");
+            renderEngine();
         }
 
-        function renderBoard() {
-            // 1. Render Discard Pile Layer
+        function renderEngine() {
+            // 1. Render Discard Pile
             const discardZone = document.getElementById("discard-zone");
             if(discardPile.length > 0) {
                 const topCard = discardPile[discardPile.length - 1];
@@ -320,120 +326,203 @@
                 discardZone.innerHTML = `<div class="game-card empty-pile">Empty</div>`;
             }
 
-            // 2. Render Player Hand Elements
-            const handDisplay = document.getElementById("player-hand-display");
-            handDisplay.innerHTML = "";
-            
-            playerHand.forEach((card, index) => {
+            // 2. Render Formed Melds/Groups
+            const meldsBoard = document.getElementById("melds-board");
+            meldsBoard.innerHTML = "";
+            if(cardGroups.length === 0) {
+                meldsBoard.innerHTML = `<div style="color: #6b7280; text-align: center; margin: auto; font-size: 0.85rem;">No groups formed yet. Select cards below and click 'Group Selected'.</div>`;
+            } else {
+                cardGroups.forEach((group, gIdx) => {
+                    const groupRow = document.createElement("div");
+                    groupRow.className = "meld-group-row";
+                    
+                    // Run a structural quick-check on this individual meld status
+                    const statusType = validateGroupStructure(group);
+                    const badgeColor = statusType === "Sequence" ? "background:#22c55e;" : (statusType === "Set" ? "background:#3b82f6;" : "background:#6b7280; color:#fff;");
+
+                    let cardsHtml = "";
+                    group.forEach((card) => {
+                        cardsHtml += `
+                            <div class="game-card ${card.suitColor}" style="width:50px; height:75px; padding:4px;">
+                                <div class="card-corner" style="font-size:0.9rem;">${card.rankName}</div>
+                                <div class="card-suit-center" style="font-size:1.3rem;">${card.suitIcon}</div>
+                            </div>
+                        `;
+                    });
+
+                    groupRow.innerHTML = `
+                        <div class="meld-badge" style="${badgeColor}">${statusType}</div>
+                        <div class="meld-cards">${cardsHtml}</div>
+                        <button class="btn-dissolve" onclick="dissolveGroup(${gIdx})">Un-Group</button>
+                    `;
+                    meldsBoard.appendChild(groupRow);
+                });
+            }
+
+            // 3. Render Unassigned Cards Pool
+            const poolDisplay = document.getElementById("pool-cards-display");
+            poolDisplay.innerHTML = "";
+            cardPool.forEach((card, pIdx) => {
                 const cardDiv = document.createElement("div");
                 cardDiv.className = `game-card ${card.suitColor}`;
-                if(selectedPlayerCardIndex === index) {
-                    cardDiv.classList.add("selected");
-                }
+                if(selectedPoolIndices.includes(pIdx)) cardDiv.classList.add("selected");
                 
                 cardDiv.innerHTML = `
                     <div class="card-corner">${card.rankName}</div>
                     <div class="card-suit-center">${card.suitIcon}</div>
                 `;
-                
-                cardDiv.onclick = () => selectHandCard(index);
-                handDisplay.appendChild(cardDiv);
+                cardDiv.onclick = () => togglePoolCardSelection(pIdx);
+                poolDisplay.appendChild(cardDiv);
             });
 
-            // 3. Update Text and Button Systems
-            document.getElementById("ai-count").innerText = aiHand.length;
-            
-            const discardBtn = document.getElementById("btn-discard");
-            if(currentTurnState === 'DISCARD' && selectedPlayerCardIndex !== null) {
-                discardBtn.disabled = false;
-            } else {
-                discardBtn.disabled = true;
-            }
+            // 4. Update UI Buttons Configurations
+            document.getElementById("pool-count").innerText = cardPool.length;
+            document.getElementById("btn-group").disabled = (selectedPoolIndices.length < 2);
+            document.getElementById("btn-discard").disabled = (turnState !== 'DISCARD' || selectedPoolIndices.length !== 1);
         }
 
         function handleDraw(source) {
-            if (currentTurnState !== 'DRAW') return;
+            if (turnState !== 'DRAW') return;
+            if (source === 'discard' && discardPile.length === 0) return;
 
-            if (source === 'stock') {
-                if (deck.length === 0) {
-                    // Reshuffle discard stack if main run runs dry
-                    const top = discardPile.pop();
-                    deck = [...discardPile];
-                    shuffleDeck();
-                    discardPile = [top];
-                }
-                playerHand.push(deck.pop());
-            } else if (source === 'discard') {
-                if (discardPile.length === 0) return;
-                playerHand.push(discardPile.pop());
-            }
-
-            currentTurnState = 'DISCARD';
-            updateStatusText("Card drawn successfully! Select a card from your hand and click Discard.");
-            renderBoard();
+            const drawnCard = (source === 'stock') ? deck.pop() : discardPile.pop();
+            cardPool.push(drawnCard);
+            
+            turnState = 'DISCARD';
+            selectedPoolIndices = [];
+            updateStatus("Card added to your pool! Form groups or select exactly 1 card to discard to finish your turn.");
+            renderEngine();
         }
 
-        function selectHandCard(index) {
-            selectedPlayerCardIndex = (selectedPlayerCardIndex === index) ? null : index;
-            renderBoard();
+        function togglePoolCardSelection(index) {
+            if(selectedPoolIndices.includes(index)) {
+                selectedPoolIndices = selectedPoolIndices.filter(i => i !== index);
+            } else {
+                selectedPoolIndices.push(index);
+            }
+            renderEngine();
+        }
+
+        function createGroupFromSelected() {
+            if(selectedPoolIndices.length < 2) return;
+            
+            // Sort chosen indices descending to extract cards cleanly without index shifting
+            selectedPoolIndices.sort((a, b) => b - a);
+            const newGroup = [];
+            selectedPoolIndices.forEach(idx => {
+                newGroup.push(cardPool.splice(idx, 1)[0]);
+            });
+            
+            cardGroups.push(newGroup);
+            selectedPoolIndices = [];
+            renderEngine();
+        }
+
+        function dissolveGroup(groupIndex) {
+            const extractedCards = cardGroups.splice(groupIndex, 1)[0];
+            cardPool.push(...extractedCards);
+            selectedPoolIndices = [];
+            renderEngine();
         }
 
         function executeDiscard() {
-            if (currentTurnState !== 'DISCARD' || selectedPlayerCardIndex === null) return;
-
-            // Strip from player layout arrays and push inside discard array stack
-            const discardedCard = playerHand.splice(selectedPlayerCardIndex, 1)[0];
-            discardPile.push(discardedCard);
+            if (turnState !== 'DISCARD' || selectedPoolIndices.length !== 1) return;
             
-            selectedPlayerCardIndex = null;
-            currentTurnState = 'AI_TURN';
+            const targetIdx = selectedPoolIndices[0];
+            const discarded = cardPool.splice(targetIdx, 1)[0];
+            discardPile.push(discarded);
             
-            updateStatusText("Opponent is thinking and calculating...");
-            renderBoard();
-
-            // Fire automated simulation response cycle
-            setTimeout(triggerAiTurn, 1400);
+            selectedPoolIndices = [];
+            turnState = 'DRAW';
+            updateStatus("Your Turn: Draw a card from Stock or Discard.");
+            
+            // Trigger quick AI opponent card consumption simulation
+            setTimeout(() => {
+                if(deck.length > 0) deck.pop(); // Bot draws silently
+                updateStatus("Your Turn: Bot completed its turn. Draw a card.");
+            }, 800);
+            
+            renderEngine();
         }
 
-        function triggerAiTurn() {
-            // Simple automated loop tracking engine values
-            // Bot draws from stock pile
-            if(deck.length > 0) {
-                aiHand.push(deck.pop());
-            }
-
-            // Bot evaluates hand layout superficially and discards a random object
-            const randomIdx = Math.floor(Math.random() * aiHand.length);
-            const aiDiscard = aiHand.splice(randomIdx, 1)[0];
-            discardPile.push(aiDiscard);
-
-            currentTurnState = 'DRAW';
-            updateStatusText("Your Turn: Draw a card.");
-            renderBoard();
-        }
-
-        function sortHand() {
-            // Group sequences systematically via programmatic ranking systems
-            playerHand.sort((a, b) => {
-                if (a.suitIcon !== b.suitIcon) {
-                    return a.suitIcon.localeString().localeCompare(b.suitIcon.localeString());
-                }
+        function autoSortPool() {
+            cardPool.sort((a, b) => {
+                if(a.suitLabel !== b.suitLabel) return a.suitLabel.localeCompare(b.suitLabel);
                 return a.rankValue - b.rankValue;
             });
-            selectedPlayerCardIndex = null;
-            renderBoard();
+            selectedPoolIndices = [];
+            renderEngine();
+        }
+
+        // ==========================================
+        //  🏆 RUMMY CORE SCORE & MELD UMPIRE LOGIC 
+        // ==========================================
+        function validateGroupStructure(group) {
+            if(group.length < 3) return "Invalid";
+
+            // Clone and sort cards by mathematical rank values
+            const sorted = [...group].sort((a,b) => a.rankValue - b.rankValue);
+            
+            // Rule 1: Check Sequence (Same Suit, Consecutive Numbers)
+            let isSequence = true;
+            const targetSuit = sorted[0].suitLabel;
+            for(let i = 0; i < sorted.length - 1; i++) {
+                if(sorted[i].suitLabel !== targetSuit || (sorted[i+1].rankValue - sorted[i].rankValue !== 1)) {
+                    isSequence = false;
+                    break;
+                }
+            }
+            if(isSequence) return "Sequence";
+
+            // Rule 2: Check Set (Same Rank, Different Suits)
+            let isSet = true;
+            const targetRank = sorted[0].rankValue;
+            const uniqueSuits = new Set();
+            for(let card of sorted) {
+                if(card.rankValue !== targetRank) {
+                    isSet = false;
+                    break;
+                }
+                uniqueSuits.add(card.suitLabel);
+            }
+            // A valid set cannot duplicate the same suit icon
+            if(isSet && uniqueSuits.size === sorted.length) return "Set";
+
+            return "Invalid";
         }
 
         function executeDeclare() {
-            // Simple validation layout for offline evaluation architectures
-            alert("Hand Declaration Submitted! In Rummy, your hand must form valid sequences and sets to win. Organize your groupings and challenge the bot.");
+            // Check if there are unassigned pool cards remaining outside of melds
+            if(cardPool.length > 0) {
+                alert(`Declaring Failed! You still have ${cardPool.length} unassigned cards left in your pool. Every card must belong to a group before declaring!`);
+                return;
+            }
+
+            let sequenceCount = 0;
+            let invalidGroupCount = 0;
+
+            cardGroups.forEach(group => {
+                const status = validateGroupStructure(group);
+                if(status === "Sequence") sequenceCount++;
+                if(status === "Invalid") invalidGroupCount++;
+            });
+
+            // Standard Indian Rummy Rule Validation Trigger Check
+            if(invalidGroupCount > 0) {
+                alert("Declaration Rejected! You have grouped cards, but some melds do not form valid sequences or sets. Re-check your cards.");
+            } else if(sequenceCount < 2) {
+                alert(`Declaration Rejected! You formed valid sets, but you only have ${sequenceCount} Sequence. Indian Rummy requires at least 2 valid sequences to win!`);
+            } else {
+                alert("🎉 CONGRATULATIONS! Valid Declaration! You successfully matched all 13 cards into structural sets and sequences. You win the game!");
+                initGame(); // Reset board cleanly on success
+            }
         }
 
-        function updateStatusText(msg) {
+        function updateStatus(msg) {
             document.getElementById("game-status").innerText = msg;
         }
 
-        // Auto initialization call on execution
+        // Initialize engine dynamically
         initGame();
     </script>
 </body>

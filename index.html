@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desi Deck MVP</title>
+    <style>
+        :root {
+            --bg-color: #0d2021; /* Deep Teal */
+            --card-bg: #16383a;
+            --accent-saffron: #f59e0b; /* Saffron */
+            --accent-pink: #ec4899;
+            --text-light: #f3f4f6;
+            --gold: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            color: var(--accent-saffron);
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .score-box {
+            text-align: center;
+        }
+
+        .score-box span {
+            display: block;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+        }
+
+        .score-num {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        .battleground {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 500px;
+            gap: 15px;
+            margin: auto 0;
+        }
+
+        .zone {
+            text-align: center;
+            flex: 1;
+        }
+
+        .zone-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: #9ca3af;
+            letter-spacing: 1px;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            aspect-ratio: 2/3;
+            width: 100%;
+            max-width: 180px;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card.active {
+            transform: scale(1.03);
+            box-shadow: 0 0 15px var(--accent-saffron);
+        }
+
+        .card-power {
+            background: var(--accent-saffron);
+            color: #000;
+            font-weight: bold;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            align-self: flex-start;
+        }
+
+        .card-art {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            flex-grow: 1;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .card-name {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .card-desc {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            text-align: center;
+            line-height: 1.2;
+            min-height: 35px;
+        }
+
+        .controls {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-saffron), var(--gold));
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.1s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .log {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--accent-pink);
+            min-height: 24px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Desi Deck</h1>
+        <p>Cultural Card Showdown</p>
+    </header>
+
+    <div class="scoreboard">
+        <div class="score-box">
+            <span>You</span>
+            <div class="score-num" id="player-score">0</div>
+        </div>
+        <div class="score-box">
+            <span>Match Log</span>
+            <div class="log" id="game-log">Tap Draw to Start!</div>
+        </div>
+        <div class="score-box">
+            <span>AI Bot</span>
+            <div class="score-num" id="ai-score">0</div>
+        </div>
+    </div>
+
+    <div class="battleground">
+        <div class="zone">
+            <div class="zone-title">Your Card</div>
+            <div class="card" id="player-card">
+                <div class="card-power" id="p-power">?</div>
+                <div class="card-art" id="p-art">🃏</div>
+                <div class="card-name" id="p-name">Draw Card</div>
+                <div class="card-desc" id="p-desc">Your character will appear here.</div>
+            </div>
+        </div>
+
+        <div class="zone">
+            <div class="zone-title">AI Card</div>
+            <div class="card" id="ai-card">
+                <div class="card-power" id="a-power">?</div>
+                <div class="card-art" id="a-art">🃏</div>
+                <div class="card-name" id="a-name">Opponent</div>
+                <div class="card-desc" id="a-desc">AI's character will appear here.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="draw-btn" onclick="playRound()">Draw & Battle</button>
+    </div>
+
+    <script>
+        // Localized character asset deck array
+        const desiDeck = [
+            { name: "Strict Aunty", power: 9, emoji: "👵", desc: "Judges career choices. Instantly saps enemy morale." },
+            { name: "Bollywood Hero", power: 8, emoji: "🕶️", desc: "Defeats 20 villains with a single dialogue entry." },
+            { name: "The Techie", power: 7, emoji: "💻", desc: "Fixes your parents' Wi-Fi, breaks production servers." },
+            { name: "Auto Driver", power: 6, emoji: "🛺", desc: "Will go anywhere in town... except your destination." },
+            { name: "Chaiwala", power: 5, emoji: "☕", desc: "Unstoppable morning energy boost. Refreshes hand." },
+            { name: "Gully Cricketer", power: 4, emoji: "🏏", desc: "Declares a 'trial ball' if he gets out on the first pitch." }
+        ];
+
+        let playerScore = 0;
+        let aiScore = 0;
+
+        function playRound() {
+            // Pick random cards
+            const playerCard = desiDeck[Math.floor(Math.random() * desiDeck.length)];
+            const aiCard = desiDeck[Math.floor(Math.random() * desiDeck.length)];
+
+            // Update Player Card Visuals
+            document.getElementById("p-power").innerText = playerCard.power;
+            document.getElementById("p-art").innerText = playerCard.emoji;
+            document.getElementById("p-name").innerText = playerCard.name;
+            document.getElementById("p-desc").innerText = playerCard.desc;
+            document.getElementById("player-card").classList.add("active");
+
+            // Update AI Card Visuals
+            document.getElementById("a-power").innerText = aiCard.power;
+            document.getElementById("a-art").innerText = aiCard.emoji;
+            document.getElementById("a-name").innerText = aiCard.name;
+            document.getElementById("a-desc").innerText = aiCard.desc;
+            document.getElementById("ai-card").classList.add("active");
+
+            // Battle Logic
+            const logBox = document.getElementById("game-log");
+            if (playerCard.power > aiCard.power) {
+                playerScore++;
+                logBox.innerText = `${playerCard.name} wins!`;
+                logBox.style.color = "#f59e0b";
+            } else if (aiCard.power > playerCard.power) {
+                aiScore++;
+                logBox.innerText = `${aiCard.name} wins!`;
+                logBox.style.color = "#ec4899";
+            } else {
+                logBox.innerText = "It's a Tie Clash!";
+                logBox.style.color = "#f3f4f6";
+            }
+
+            // Update Numerical Score HTML
+            document.getElementById("player-score").innerText = playerScore;
+            document.getElementById("ai-score").innerText = aiScore;
+
+            // Remove visual flash animation after short delay
+            setTimeout(() => {
+                document.getElementById("player-card").classList.remove("active");
+                document.getElementById("ai-card").classList.remove("active");
+            }, 400);
+        }
+    </script>
+</body>
+</html>

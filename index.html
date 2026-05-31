@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desi Deck MVP</title>
+    <title>Desi Deck - 13 Card Rummy</title>
     <style>
         :root {
-            --bg-color: #0d2021; /* Deep Teal */
-            --card-bg: #16383a;
-            --accent-saffron: #f59e0b; /* Saffron */
-            --accent-pink: #ec4899;
+            --bg-teal: #061a1b;
+            --surface-teal: #0d2d2f;
+            --accent-gold: #d97706;
+            --accent-saffron: #f59e0b;
+            --card-white: #ffffff;
             --text-light: #f3f4f6;
-            --gold: #d97706;
+            --suit-red: #dc2626;
+            --suit-black: #1f2937;
         }
 
         * {
@@ -19,295 +21,420 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-teal);
             color: var(--text-light);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: space-between;
-            min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
+            overflow-x: hidden;
         }
 
         header {
             text-align: center;
-            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(217, 119, 6, 0.2);
         }
 
         header h1 {
             color: var(--accent-saffron);
-            font-size: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
-        }
-
-        header p {
-            font-size: 0.9rem;
-            color: #9ca3af;
-        }
-
-        .scoreboard {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .score-box {
-            text-align: center;
-        }
-
-        .score-box span {
-            display: block;
-            font-size: 0.8rem;
-            color: #9ca3af;
-            text-transform: uppercase;
-        }
-
-        .score-num {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--text-light);
-        }
-
-        .battleground {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            max-width: 500px;
-            gap: 15px;
-            margin: auto 0;
-        }
-
-        .zone {
-            text-align: center;
-            flex: 1;
-        }
-
-        .zone-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            color: #9ca3af;
+            font-size: 1.4rem;
             letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        /* Card Styling */
-        .card {
-            background-color: var(--card-bg);
-            border: 2px solid var(--gold);
-            border-radius: 16px;
-            aspect-ratio: 2/3;
-            width: 100%;
-            max-width: 180px;
-            margin: 0 auto;
-            position: relative;
+        .status-banner {
+            background: rgba(255, 255, 255, 0.05);
+            text-align: center;
+            padding: 6px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            margin: 8px 0;
+            color: var(--accent-saffron);
+            font-weight: bold;
+        }
+
+        /* Opponent Area */
+        .ai-area {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .ai-card-count {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        /* Play Mat (Center Board) */
+        .play-mat {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin: 20px 0;
+        }
+
+        .pile-container {
+            text-align: center;
+        }
+        .pile-label {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        /* Playing Card Aesthetics */
+        .game-card {
+            width: 65px;
+            height: 95px;
+            background-color: var(--card-white);
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 12px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 6px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s ease, border 0.2s ease;
         }
 
-        .card.active {
-            transform: scale(1.03);
-            box-shadow: 0 0 15px var(--accent-saffron);
-        }
+        .game-card.red { color: var(--suit-red); }
+        .game-card.black { color: var(--suit-black); }
 
-        .card-power {
-            background: var(--accent-saffron);
-            color: #000;
+        .card-corner {
+            font-size: 1.1rem;
             font-weight: bold;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+            line-height: 1;
+        }
+        .card-suit-center {
+            font-size: 1.8rem;
+            align-self: center;
+            line-height: 1;
+        }
+
+        /* Specialized Piles */
+        .card-back {
+            background: linear-gradient(135deg, #b45309, #78350f);
+            border: 2px solid var(--accent-saffron);
+            color: var(--accent-saffron);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
-            align-self: flex-start;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
 
-        .card-art {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            flex-grow: 1;
-            margin: 8px 0;
+        .empty-pile {
+            border: 2px dashed rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            border: 1px dashed rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            color: #4b5563;
         }
 
-        .card-name {
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: var(--text-light);
-            text-align: center;
-            margin-bottom: 4px;
+        /* Player Control Panel */
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
         }
-
-        .card-desc {
-            font-size: 0.7rem;
-            color: #9ca3af;
-            text-align: center;
-            line-height: 1.2;
-            min-height: 35px;
-        }
-
-        .controls {
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            margin-top: 20px;
-        }
-
         .btn {
-            background: linear-gradient(135deg, var(--accent-saffron), var(--gold));
+            background: var(--surface-teal);
+            color: var(--text-light);
+            border: 1px solid var(--accent-gold);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            max-width: 130px;
+            text-align: center;
+        }
+        .btn-action {
+            background: linear-gradient(135deg, var(--accent-saffron), var(--accent-gold));
             color: #000;
             border: none;
-            padding: 14px 28px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.1s ease;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
 
-        .btn:active {
-            transform: scale(0.98);
+        /* Player Hand Grid Container */
+        .player-hand-container {
+            background: var(--surface-teal);
+            padding: 12px 6px;
+            border-radius: 12px 12px 0 0;
+            border-top: 2px solid var(--accent-gold);
         }
 
-        .log {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: var(--accent-pink);
-            min-height: 24px;
-            font-weight: 500;
+        .hand-scroll-wrapper {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 4px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Target state when player taps a card to select it */
+        .player-hand-container .game-card.selected {
+            transform: translateY(-15px);
+            border: 3px solid var(--accent-saffron);
+            box-shadow: 0 10px 15px rgba(245, 158, 11, 0.4);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Desi Deck</h1>
-        <p>Cultural Card Showdown</p>
+        <h1>Desi Deck Rummy</h1>
     </header>
 
-    <div class="scoreboard">
-        <div class="score-box">
-            <span>You</span>
-            <div class="score-num" id="player-score">0</div>
-        </div>
-        <div class="score-box">
-            <span>Match Log</span>
-            <div class="log" id="game-log">Tap Draw to Start!</div>
-        </div>
-        <div class="score-box">
-            <span>AI Bot</span>
-            <div class="score-num" id="ai-score">0</div>
-        </div>
+    <div class="status-banner" id="game-status">Game Loading...</div>
+
+    <!-- Opponent Area -->
+    <div class="ai-area">
+        <div class="ai-card-count">Opponent Bot: <span id="ai-count">13</span> Cards (Hidden)</div>
     </div>
 
-    <div class="battleground">
-        <div class="zone">
-            <div class="zone-title">Your Card</div>
-            <div class="card" id="player-card">
-                <div class="card-power" id="p-power">?</div>
-                <div class="card-art" id="p-art">🃏</div>
-                <div class="card-name" id="p-name">Draw Card</div>
-                <div class="card-desc" id="p-desc">Your character will appear here.</div>
-            </div>
+    <!-- Center Board Mat -->
+    <div class="play-mat">
+        <div class="pile-container">
+            <div class="pile-label">Stock Pile</div>
+            <div class="game-card card-back" id="stock-pile" onclick="handleDraw('stock')">🎴</div>
         </div>
-
-        <div class="zone">
-            <div class="zone-title">AI Card</div>
-            <div class="card" id="ai-card">
-                <div class="card-power" id="a-power">?</div>
-                <div class="card-art" id="a-art">🃏</div>
-                <div class="card-name" id="a-name">Opponent</div>
-                <div class="card-desc" id="a-desc">AI's character will appear here.</div>
+        <div class="pile-container">
+            <div class="pile-label">Discard</div>
+            <div id="discard-zone">
+                <!-- Injected via JavaScript dynamically -->
             </div>
         </div>
     </div>
 
-    <div class="controls">
-        <button class="btn" id="draw-btn" onclick="playRound()">Draw & Battle</button>
+    <!-- Mid Panel Control Dashboard -->
+    <div class="controls-row">
+        <button class="btn" id="btn-sort" onclick="sortHand()">Auto Sort</button>
+        <button class="btn btn-action" id="btn-discard" onclick="executeDiscard()" disabled>Discard Selected</button>
+        <button class="btn" id="btn-declare" onclick="executeDeclare()">Declare Hand</button>
+    </div>
+
+    <!-- Player Interaction Sandbox -->
+    <div class="player-hand-container">
+        <div class="pile-label" style="text-align: center; margin-bottom: 4px;">Your 13-Card Hand (Tap card to select)</div>
+        <div class="hand-scroll-wrapper" id="player-hand-display">
+            <!-- Dynamic Injection Slot -->
+        </div>
     </div>
 
     <script>
-        // Localized character asset deck array
-        const desiDeck = [
-            { name: "Strict Aunty", power: 9, emoji: "👵", desc: "Judges career choices. Instantly saps enemy morale." },
-            { name: "Bollywood Hero", power: 8, emoji: "🕶️", desc: "Defeats 20 villains with a single dialogue entry." },
-            { name: "The Techie", power: 7, emoji: "💻", desc: "Fixes your parents' Wi-Fi, breaks production servers." },
-            { name: "Auto Driver", power: 6, emoji: "🛺", desc: "Will go anywhere in town... except your destination." },
-            { name: "Chaiwala", power: 5, emoji: "☕", desc: "Unstoppable morning energy boost. Refreshes hand." },
-            { name: "Gully Cricketer", power: 4, emoji: "🏏", desc: "Declares a 'trial ball' if he gets out on the first pitch." }
+        const SUITS = [
+            { icon: '♠', label: 'S', color: 'black' },
+            { icon: '♥', label: 'H', color: 'red' },
+            { icon: '♦', label: 'D', color: 'red' },
+            { icon: '♣', label: 'C', color: 'black' }
+        ];
+        const RANKS = [
+            { name: '2', val: 2 }, { name: '3', val: 3 }, { name: '4', val: 4 },
+            { name: '5', val: 5 }, { name: '6', val: 6 }, { name: '7', val: 7 },
+            { name: '8', val: 8 }, { name: '9', val: 9 }, { name: '10', val: 10 },
+            { name: 'J', val: 11 }, { name: 'Q', val: 12 }, { name: 'K', val: 13 }, { name: 'A', val: 14 }
         ];
 
-        let playerScore = 0;
-        let aiScore = 0;
+        let deck = [];
+        let playerHand = [];
+        let aiHand = [];
+        let discardPile = [];
+        
+        // Game State Engine Loops: 'DRAW', 'DISCARD', 'AI_TURN'
+        let currentTurnState = 'DRAW'; 
+        let selectedPlayerCardIndex = null;
 
-        function playRound() {
-            // Pick random cards
-            const playerCard = desiDeck[Math.floor(Math.random() * desiDeck.length)];
-            const aiCard = desiDeck[Math.floor(Math.random() * desiDeck.length)];
+        function buildDeck() {
+            deck = [];
+            for (let suit of SUITS) {
+                for (let rank of RANKS) {
+                    deck.push({
+                        suitIcon: suit.icon,
+                        suitColor: suit.color,
+                        rankName: rank.name,
+                        rankValue: rank.val
+                    });
+                }
+            }
+        }
 
-            // Update Player Card Visuals
-            document.getElementById("p-power").innerText = playerCard.power;
-            document.getElementById("p-art").innerText = playerCard.emoji;
-            document.getElementById("p-name").innerText = playerCard.name;
-            document.getElementById("p-desc").innerText = playerCard.desc;
-            document.getElementById("player-card").classList.add("active");
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
 
-            // Update AI Card Visuals
-            document.getElementById("a-power").innerText = aiCard.power;
-            document.getElementById("a-art").innerText = aiCard.emoji;
-            document.getElementById("a-name").innerText = aiCard.name;
-            document.getElementById("a-desc").innerText = aiCard.desc;
-            document.getElementById("ai-card").classList.add("active");
+        function initGame() {
+            buildDeck();
+            shuffleDeck();
 
-            // Battle Logic
-            const logBox = document.getElementById("game-log");
-            if (playerCard.power > aiCard.power) {
-                playerScore++;
-                logBox.innerText = `${playerCard.name} wins!`;
-                logBox.style.color = "#f59e0b";
-            } else if (aiCard.power > playerCard.power) {
-                aiScore++;
-                logBox.innerText = `${aiCard.name} wins!`;
-                logBox.style.color = "#ec4899";
-            } else {
-                logBox.innerText = "It's a Tie Clash!";
-                logBox.style.color = "#f3f4f6";
+            // Deal 13 structural cards to both entities
+            playerHand = [];
+            aiHand = [];
+            for(let i = 0; i < 13; i++) {
+                playerHand.push(deck.pop());
+                aiHand.push(deck.pop());
             }
 
-            // Update Numerical Score HTML
-            document.getElementById("player-score").innerText = playerScore;
-            document.getElementById("ai-score").innerText = aiScore;
-
-            // Remove visual flash animation after short delay
-            setTimeout(() => {
-                document.getElementById("player-card").classList.remove("active");
-                document.getElementById("ai-card").classList.remove("active");
-            }, 400);
+            // Flip top card to launch the Discard Pile
+            discardPile = [deck.pop()];
+            
+            currentTurnState = 'DRAW';
+            selectedPlayerCardIndex = null;
+            
+            updateStatusText("Your Turn: Draw a card from Stock or Discard pile.");
+            renderBoard();
         }
+
+        function renderBoard() {
+            // 1. Render Discard Pile Layer
+            const discardZone = document.getElementById("discard-zone");
+            if(discardPile.length > 0) {
+                const topCard = discardPile[discardPile.length - 1];
+                discardZone.innerHTML = `
+                    <div class="game-card ${topCard.suitColor}" onclick="handleDraw('discard')">
+                        <div class="card-corner">${topCard.rankName}</div>
+                        <div class="card-suit-center">${topCard.suitIcon}</div>
+                    </div>
+                `;
+            } else {
+                discardZone.innerHTML = `<div class="game-card empty-pile">Empty</div>`;
+            }
+
+            // 2. Render Player Hand Elements
+            const handDisplay = document.getElementById("player-hand-display");
+            handDisplay.innerHTML = "";
+            
+            playerHand.forEach((card, index) => {
+                const cardDiv = document.createElement("div");
+                cardDiv.className = `game-card ${card.suitColor}`;
+                if(selectedPlayerCardIndex === index) {
+                    cardDiv.classList.add("selected");
+                }
+                
+                cardDiv.innerHTML = `
+                    <div class="card-corner">${card.rankName}</div>
+                    <div class="card-suit-center">${card.suitIcon}</div>
+                `;
+                
+                cardDiv.onclick = () => selectHandCard(index);
+                handDisplay.appendChild(cardDiv);
+            });
+
+            // 3. Update Text and Button Systems
+            document.getElementById("ai-count").innerText = aiHand.length;
+            
+            const discardBtn = document.getElementById("btn-discard");
+            if(currentTurnState === 'DISCARD' && selectedPlayerCardIndex !== null) {
+                discardBtn.disabled = false;
+            } else {
+                discardBtn.disabled = true;
+            }
+        }
+
+        function handleDraw(source) {
+            if (currentTurnState !== 'DRAW') return;
+
+            if (source === 'stock') {
+                if (deck.length === 0) {
+                    // Reshuffle discard stack if main run runs dry
+                    const top = discardPile.pop();
+                    deck = [...discardPile];
+                    shuffleDeck();
+                    discardPile = [top];
+                }
+                playerHand.push(deck.pop());
+            } else if (source === 'discard') {
+                if (discardPile.length === 0) return;
+                playerHand.push(discardPile.pop());
+            }
+
+            currentTurnState = 'DISCARD';
+            updateStatusText("Card drawn successfully! Select a card from your hand and click Discard.");
+            renderBoard();
+        }
+
+        function selectHandCard(index) {
+            selectedPlayerCardIndex = (selectedPlayerCardIndex === index) ? null : index;
+            renderBoard();
+        }
+
+        function executeDiscard() {
+            if (currentTurnState !== 'DISCARD' || selectedPlayerCardIndex === null) return;
+
+            // Strip from player layout arrays and push inside discard array stack
+            const discardedCard = playerHand.splice(selectedPlayerCardIndex, 1)[0];
+            discardPile.push(discardedCard);
+            
+            selectedPlayerCardIndex = null;
+            currentTurnState = 'AI_TURN';
+            
+            updateStatusText("Opponent is thinking and calculating...");
+            renderBoard();
+
+            // Fire automated simulation response cycle
+            setTimeout(triggerAiTurn, 1400);
+        }
+
+        function triggerAiTurn() {
+            // Simple automated loop tracking engine values
+            // Bot draws from stock pile
+            if(deck.length > 0) {
+                aiHand.push(deck.pop());
+            }
+
+            // Bot evaluates hand layout superficially and discards a random object
+            const randomIdx = Math.floor(Math.random() * aiHand.length);
+            const aiDiscard = aiHand.splice(randomIdx, 1)[0];
+            discardPile.push(aiDiscard);
+
+            currentTurnState = 'DRAW';
+            updateStatusText("Your Turn: Draw a card.");
+            renderBoard();
+        }
+
+        function sortHand() {
+            // Group sequences systematically via programmatic ranking systems
+            playerHand.sort((a, b) => {
+                if (a.suitIcon !== b.suitIcon) {
+                    return a.suitIcon.localeString().localeCompare(b.suitIcon.localeString());
+                }
+                return a.rankValue - b.rankValue;
+            });
+            selectedPlayerCardIndex = null;
+            renderBoard();
+        }
+
+        function executeDeclare() {
+            // Simple validation layout for offline evaluation architectures
+            alert("Hand Declaration Submitted! In Rummy, your hand must form valid sequences and sets to win. Organize your groupings and challenge the bot.");
+        }
+
+        function updateStatusText(msg) {
+            document.getElementById("game-status").innerText = msg;
+        }
+
+        // Auto initialization call on execution
+        initGame();
     </script>
 </body>
 </html>

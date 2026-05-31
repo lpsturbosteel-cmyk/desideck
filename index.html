@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desi Deck - Pro 13-Card Rummy</title>
+    <title>Desi Deck - Premium Card Club</title>
     <style>
         :root {
-            --bg-teal: #051415;
-            --surface-teal: #0b2628;
-            --mat-green: #0d4626;
-            --accent-gold: #d97706;
-            --accent-saffron: #f59e0b;
-            --card-white: #ffffff;
-            --text-light: #f3f4f6;
-            --suit-red: #dc2626;
-            --suit-black: #111827;
+            --casino-green: radial-gradient(circle, #115e2e 0%, #062e16 100%);
+            --panel-dark: rgba(10, 15, 12, 0.85);
+            --gold-linear: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+            --gold-glow: 0 0 15px rgba(245, 158, 11, 0.4);
+            --text-premium: #f3f4f6;
+            --text-gold: #fbbf24;
         }
 
         * {
@@ -22,508 +19,317 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-teal);
-            color: var(--text-light);
+            background: var(--casino-green);
+            color: var(--text-premium);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 10px;
+            overflow-x: hidden;
         }
 
+        /* Premium Top Navigation Bar */
         header {
-            text-align: center;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(217, 119, 6, 0.2);
-        }
-
-        header h1 {
-            color: var(--accent-saffron);
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .status-banner {
-            background: rgba(255, 255, 255, 0.05);
-            text-align: center;
-            padding: 8px;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            margin: 8px 0;
-            color: var(--accent-saffron);
-            font-weight: bold;
-            border-left: 4px solid var(--accent-gold);
-        }
-
-        .play-mat {
-            background: var(--mat-green);
-            border: 3px solid var(--accent-gold);
-            border-radius: 16px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.3));
+            padding: 15px 20px;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
-        }
-
-        .pile-container { text-align: center; }
-        .pile-label {
-            font-size: 0.75rem;
-            color: #d1d5db;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        /* Playing Card Styles */
-        .game-card {
-            width: 65px;
-            height: 95px;
-            background-color: var(--card-white);
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
             justify-content: space-between;
-            padding: 6px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            cursor: pointer;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .game-card.red { color: var(--suit-red); }
-        .game-card.black { color: var(--suit-black); }
-        
-        .card-corner { font-size: 1.1rem; font-weight: bold; line-height: 1; }
-        .card-suit-center { font-size: 1.8rem; align-self: center; line-height: 1; }
-
-        .card-back {
-            background: linear-gradient(135deg, #b45309, #78350f);
-            border: 2px solid var(--accent-saffron);
-            color: var(--accent-saffron);
-            display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+            border-bottom: 2px solid #b45309;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        /* Dynamic Meld/Grouping Interface CSS */
-        .dashboard-label {
-            font-size: 0.8rem;
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #ffe066, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            color: var(--accent-saffron);
-            margin-left: 5px;
-            margin-bottom: 5px;
-            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: var(--gold-glow);
         }
 
-        .melds-container {
-            background: rgba(0,0,0,0.2);
-            border: 1px dashed rgba(255,255,255,0.1);
-            padding: 10px;
-            border-radius: 10px;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .meld-group-row {
-            background: var(--surface-teal);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 8px;
-            border-radius: 8px;
+        .user-profile-tag {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .balance-gold {
+            color: var(--text-gold);
+            font-weight: bold;
+        }
+
+        /* Hero Banner/Welcome Area */
+        .welcome-hero {
+            text-align: center;
+            padding: 30px 15px 15px 15px;
+        }
+
+        .welcome-hero h2 {
+            font-size: 1.4rem;
+            color: #d1d5db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .welcome-hero p {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+
+        /* Multi-Game Selection Grid Container */
+        .lobby-grid {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            flex-grow: 1;
+            align-content: center;
+        }
+
+        /* Individual Premium Game Selection Cards */
+        .game-card-wrapper {
+            background: var(--panel-dark);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             position: relative;
         }
 
-        .meld-badge {
-            background: var(--accent-gold);
-            color: #000;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-transform: uppercase;
-            writing-mode: vertical-lr;
-            transform: rotate(180deg);
+        .game-card-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: var(--gold-linear);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
         }
 
-        .meld-cards { display: flex; gap: 6px; flex-grow: 1; overflow-x: auto; }
-
-        .btn-dissolve {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            font-size: 0.7rem;
-            border-radius: 4px;
-            cursor: pointer;
+        .game-card-wrapper:hover {
+            transform: translateY(-8px);
+            border-color: var(--text-gold);
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.25);
         }
 
-        /* Unassigned Hand Space */
-        .hand-pool-section {
-            background: var(--surface-teal);
-            padding: 12px;
-            border-radius: 12px;
-            border-top: 3px solid var(--accent-gold);
+        .game-card-wrapper:hover::before {
+            opacity: 1;
         }
 
-        .hand-row {
+        .game-art-strip {
+            height: 140px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
             display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Decorative accents inside game slots */
+        .card-decorator {
+            position: absolute;
+            opacity: 0.15;
+            font-size: 6rem;
+            right: 10px;
+            bottom: -10px;
+        }
+
+        .game-details-box {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
             gap: 8px;
-            overflow-x: auto;
-            padding: 15px 4px;
-            min-height: 120px;
         }
 
-        .hand-row .game-card.selected {
-            transform: translateY(-15px);
-            border: 3px solid var(--accent-saffron);
-            box-shadow: 0 8px 15px rgba(245, 158, 11, 0.5);
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
         }
 
-        /* Controls Panel */
-        .controls-panel {
+        .game-tagline {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            line-height: 1.4;
+            min-height: 40px;
+        }
+
+        .game-meta-info {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
-            margin-top: 5px;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.8rem;
+            color: var(--text-gold);
+            font-weight: 600;
         }
 
-        .btn {
-            background: #1f2937;
-            color: var(--text-light);
-            border: 1px solid #4b5563;
-            padding: 10px 12px;
+        .play-action-btn {
+            background: var(--gold-linear);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 12px;
+            border: none;
             border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: bold;
+            margin-top: 5px;
             cursor: pointer;
-            flex: 1;
-            text-align: center;
+            letter-spacing: 1px;
+            transition: filter 0.2s ease;
         }
 
-        .btn-action { background: linear-gradient(135deg, var(--accent-saffron), var(--accent-gold)); color: #000; border: none; }
-        .btn-success { background: #22c55e; color: #fff; border: none; }
-        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .game-card-wrapper:hover .play-action-btn {
+            filter: brightness(1.2);
+        }
+
+        /* Maintenance Badge styling */
+        .badge-development {
+            background: #374151;
+            color: #9ca3af;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid #4b5563;
+        }
+
+        .badge-live {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid #22c55e;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0,0,0,0.9);
+            text-align: center;
+            padding: 12px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
     </style>
 </head>
 <body>
 
+    <!-- Premium Header -->
     <header>
-        <h1>Desi Deck Rummy Pro</h1>
+        <div class="brand-logo">Desi Deck</div>
+        <div class="user-profile-tag">
+            <span>Club Player</span>
+            <span class="balance-gold">₹ Free Play</span>
+        </div>
     </header>
 
-    <div class="status-banner" id="game-status">Loading Rummy Arena...</div>
-
-    <div class="play-mat">
-        <div class="pile-container">
-            <div class="pile-label">Stock Pile</div>
-            <div class="game-card card-back" id="stock-pile" onclick="handleDraw('stock')">🎴</div>
-        </div>
-        <div class="pile-container">
-            <div class="pile-label">Discard Pile</div>
-            <div id="discard-zone"></div>
-        </div>
+    <!-- Welcome Frame -->
+    <div class="welcome-hero">
+        <h2>Select Your Lounge</h2>
+        <p>Choose an authentic Indian card classic to begin your session</p>
     </div>
 
-    <div class="dashboard-label">Your Melds / Card Groups</div>
-    <div class="melds-container" id="melds-board">
+    <!-- Multi-Game Interface Grid -->
+    <main class="lobby-grid">
+
+        <!-- Game 1: 13-Card Rummy Container -->
+        <div class="game-card-wrapper" onclick="launchGame('rummy')">
+            <div class="game-art-strip" style="background: linear-gradient(135deg, #166534, #064e3b);">
+                🃏
+                <div class="card-decorator">♣️</div>
+            </div>
+            <div class="game-details-box">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="game-title">13-Card Rummy</span>
+                    <span class="badge-live">Live</span>
+                </div>
+                <div class="game-tagline">Form valid sequences and sets to outsmart the dealer engine.</div>
+                <div class="game-meta-info">
+                    <span>Mode: Single Player AI</span>
+                    <span>Rules: Indian Classic</span>
+                </div>
+                <button class="play-action-btn">Enter Table</button>
+            </div>
         </div>
 
-    <div class="controls-panel">
-        <button class="btn" id="btn-sort" onclick="autoSortPool()">Auto Sort</button>
-        <button class="btn btn-action" id="btn-group" onclick="createGroupFromSelected()" disabled>Group Selected</button>
-        <button class="btn btn-action" id="btn-discard" onclick="executeDiscard()" disabled>Discard Card</button>
-        <button class="btn btn-success" id="btn-declare" onclick="executeDeclare()">Declare Game</button>
-    </div>
+        <!-- Game 2: Teen Patti Container -->
+        <div class="game-card-wrapper" onclick="launchGame('teenpatti')">
+            <div class="game-art-strip" style="background: linear-gradient(135deg, #991b1b, #7f1d1d);">
+                👑
+                <div class="card-decorator">♥️</div>
+            </div>
+            <div class="game-details-box">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="game-title">Teen Patti</span>
+                    <span class="badge-development">In Dev</span>
+                </div>
+                <div class="game-tagline">The ultimate game of flash, luck, and psychological skill.</div>
+                <div class="game-meta-info">
+                    <span>Mode: Pass & Play</span>
+                    <span>Status: Structural Layout</span>
+                </div>
+                <button class="play-action-btn" style="background:#374151; color:#9ca3af; cursor:not-allowed;" disabled>Locked</button>
+            </div>
+        </div>
 
-    <div class="hand-pool-section">
-        <div class="dashboard-label" style="text-align: center; color: #9ca3af;">Unassigned Cards Pool (<span id="pool-count">13</span>)</div>
-        <div class="hand-row" id="pool-cards-display"></div>
-    </div>
+        <!-- Game 3: Bluff Container -->
+        <div class="game-card-wrapper" onclick="launchGame('bluff')">
+            <div class="game-art-strip" style="background: linear-gradient(135deg, #6b21a8, #581c87);">
+                🎭
+                <div class="card-decorator">♠️</div>
+            </div>
+            <div class="game-details-box">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="game-title">Bluff (Chor)</span>
+                    <span class="badge-development">In Dev</span>
+                </div>
+                <div class="game-tagline">Hide your hand, slide your cards, and read your opponent's face.</div>
+                <div class="game-meta-info">
+                    <span>Mode: Local Pass</span>
+                    <span>Status: Architecture</span>
+                </div>
+                <button class="play-action-btn" style="background:#374151; color:#9ca3af; cursor:not-allowed;" disabled>Locked</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Security Overlay -->
+    <footer>
+        Desi Deck Premium Suite • Strictly Non-Monetized Free Simulation Platform
+    </footer>
 
     <script>
-        const SUITS = [
-            { icon: '♠', label: 'S', color: 'black' },
-            { icon: '♥', label: 'H', color: 'red' },
-            { icon: '♦', label: 'D', color: 'red' },
-            { icon: '♣', label: 'C', color: 'black' }
-        ];
-        const RANKS = [
-            { name: '2', val: 2 }, { name: '3', val: 3 }, { name: '4', val: 4 },
-            { name: '5', val: 5 }, { name: '6', val: 6 }, { name: '7', val: 7 },
-            { name: '8', val: 8 }, { name: '9', val: 9 }, { name: '10', val: 10 },
-            { name: 'J', val: 11 }, { name: 'Q', val: 12 }, { name: 'K', val: 13 }, { name: 'A', val: 14 }
-        ];
-
-        let deck = [];
-        let cardPool = [];       // Cards currently unassigned to any groups
-        let cardGroups = [];     // Array of arrays holding user-created groups [[card, card], [card, card]]
-        let discardPile = [];
-        let turnState = 'DRAW';  // 'DRAW' or 'DISCARD'
-        let selectedPoolIndices = [];
-
-        function buildDeck() {
-            deck = [];
-            for (let suit of SUITS) {
-                for (let rank of RANKS) {
-                    deck.push({
-                        suitIcon: suit.icon, suitColor: suit.color, suitLabel: suit.label,
-                        rankName: rank.name, rankValue: rank.val
-                    });
-                }
+        function launchGame(gameId) {
+            if(gameId === 'rummy') {
+                // When clicked, redirect straight to our detailed rummy table workspace module
+                window.location.href = 'rummy.html';
             }
         }
-
-        function shuffleDeck() {
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
-        }
-
-        function initGame() {
-            buildDeck();
-            shuffleDeck();
-            cardPool = [];
-            cardGroups = [];
-            selectedPoolIndices = [];
-            
-            // Deal exactly 13 cards to the player
-            for (let i = 0; i < 13; i++) {
-                cardPool.push(deck.pop());
-            }
-            
-            discardPile = [deck.pop()];
-            turnState = 'DRAW';
-            updateStatus("Your Turn: Draw a card from the Stock or Discard pile to start.");
-            renderEngine();
-        }
-
-        function renderEngine() {
-            // 1. Render Discard Pile
-            const discardZone = document.getElementById("discard-zone");
-            if(discardPile.length > 0) {
-                const topCard = discardPile[discardPile.length - 1];
-                discardZone.innerHTML = `
-                    <div class="game-card ${topCard.suitColor}" onclick="handleDraw('discard')">
-                        <div class="card-corner">${topCard.rankName}</div>
-                        <div class="card-suit-center">${topCard.suitIcon}</div>
-                    </div>
-                `;
-            } else {
-                discardZone.innerHTML = `<div class="game-card empty-pile">Empty</div>`;
-            }
-
-            // 2. Render Formed Melds/Groups
-            const meldsBoard = document.getElementById("melds-board");
-            meldsBoard.innerHTML = "";
-            if(cardGroups.length === 0) {
-                meldsBoard.innerHTML = `<div style="color: #6b7280; text-align: center; margin: auto; font-size: 0.85rem;">No groups formed yet. Select cards below and click 'Group Selected'.</div>`;
-            } else {
-                cardGroups.forEach((group, gIdx) => {
-                    const groupRow = document.createElement("div");
-                    groupRow.className = "meld-group-row";
-                    
-                    // Run a structural quick-check on this individual meld status
-                    const statusType = validateGroupStructure(group);
-                    const badgeColor = statusType === "Sequence" ? "background:#22c55e;" : (statusType === "Set" ? "background:#3b82f6;" : "background:#6b7280; color:#fff;");
-
-                    let cardsHtml = "";
-                    group.forEach((card) => {
-                        cardsHtml += `
-                            <div class="game-card ${card.suitColor}" style="width:50px; height:75px; padding:4px;">
-                                <div class="card-corner" style="font-size:0.9rem;">${card.rankName}</div>
-                                <div class="card-suit-center" style="font-size:1.3rem;">${card.suitIcon}</div>
-                            </div>
-                        `;
-                    });
-
-                    groupRow.innerHTML = `
-                        <div class="meld-badge" style="${badgeColor}">${statusType}</div>
-                        <div class="meld-cards">${cardsHtml}</div>
-                        <button class="btn-dissolve" onclick="dissolveGroup(${gIdx})">Un-Group</button>
-                    `;
-                    meldsBoard.appendChild(groupRow);
-                });
-            }
-
-            // 3. Render Unassigned Cards Pool
-            const poolDisplay = document.getElementById("pool-cards-display");
-            poolDisplay.innerHTML = "";
-            cardPool.forEach((card, pIdx) => {
-                const cardDiv = document.createElement("div");
-                cardDiv.className = `game-card ${card.suitColor}`;
-                if(selectedPoolIndices.includes(pIdx)) cardDiv.classList.add("selected");
-                
-                cardDiv.innerHTML = `
-                    <div class="card-corner">${card.rankName}</div>
-                    <div class="card-suit-center">${card.suitIcon}</div>
-                `;
-                cardDiv.onclick = () => togglePoolCardSelection(pIdx);
-                poolDisplay.appendChild(cardDiv);
-            });
-
-            // 4. Update UI Buttons Configurations
-            document.getElementById("pool-count").innerText = cardPool.length;
-            document.getElementById("btn-group").disabled = (selectedPoolIndices.length < 2);
-            document.getElementById("btn-discard").disabled = (turnState !== 'DISCARD' || selectedPoolIndices.length !== 1);
-        }
-
-        function handleDraw(source) {
-            if (turnState !== 'DRAW') return;
-            if (source === 'discard' && discardPile.length === 0) return;
-
-            const drawnCard = (source === 'stock') ? deck.pop() : discardPile.pop();
-            cardPool.push(drawnCard);
-            
-            turnState = 'DISCARD';
-            selectedPoolIndices = [];
-            updateStatus("Card added to your pool! Form groups or select exactly 1 card to discard to finish your turn.");
-            renderEngine();
-        }
-
-        function togglePoolCardSelection(index) {
-            if(selectedPoolIndices.includes(index)) {
-                selectedPoolIndices = selectedPoolIndices.filter(i => i !== index);
-            } else {
-                selectedPoolIndices.push(index);
-            }
-            renderEngine();
-        }
-
-        function createGroupFromSelected() {
-            if(selectedPoolIndices.length < 2) return;
-            
-            // Sort chosen indices descending to extract cards cleanly without index shifting
-            selectedPoolIndices.sort((a, b) => b - a);
-            const newGroup = [];
-            selectedPoolIndices.forEach(idx => {
-                newGroup.push(cardPool.splice(idx, 1)[0]);
-            });
-            
-            cardGroups.push(newGroup);
-            selectedPoolIndices = [];
-            renderEngine();
-        }
-
-        function dissolveGroup(groupIndex) {
-            const extractedCards = cardGroups.splice(groupIndex, 1)[0];
-            cardPool.push(...extractedCards);
-            selectedPoolIndices = [];
-            renderEngine();
-        }
-
-        function executeDiscard() {
-            if (turnState !== 'DISCARD' || selectedPoolIndices.length !== 1) return;
-            
-            const targetIdx = selectedPoolIndices[0];
-            const discarded = cardPool.splice(targetIdx, 1)[0];
-            discardPile.push(discarded);
-            
-            selectedPoolIndices = [];
-            turnState = 'DRAW';
-            updateStatus("Your Turn: Draw a card from Stock or Discard.");
-            
-            // Trigger quick AI opponent card consumption simulation
-            setTimeout(() => {
-                if(deck.length > 0) deck.pop(); // Bot draws silently
-                updateStatus("Your Turn: Bot completed its turn. Draw a card.");
-            }, 800);
-            
-            renderEngine();
-        }
-
-        function autoSortPool() {
-            cardPool.sort((a, b) => {
-                if(a.suitLabel !== b.suitLabel) return a.suitLabel.localeCompare(b.suitLabel);
-                return a.rankValue - b.rankValue;
-            });
-            selectedPoolIndices = [];
-            renderEngine();
-        }
-
-        // ==========================================
-        //  🏆 RUMMY CORE SCORE & MELD UMPIRE LOGIC 
-        // ==========================================
-        function validateGroupStructure(group) {
-            if(group.length < 3) return "Invalid";
-
-            // Clone and sort cards by mathematical rank values
-            const sorted = [...group].sort((a,b) => a.rankValue - b.rankValue);
-            
-            // Rule 1: Check Sequence (Same Suit, Consecutive Numbers)
-            let isSequence = true;
-            const targetSuit = sorted[0].suitLabel;
-            for(let i = 0; i < sorted.length - 1; i++) {
-                if(sorted[i].suitLabel !== targetSuit || (sorted[i+1].rankValue - sorted[i].rankValue !== 1)) {
-                    isSequence = false;
-                    break;
-                }
-            }
-            if(isSequence) return "Sequence";
-
-            // Rule 2: Check Set (Same Rank, Different Suits)
-            let isSet = true;
-            const targetRank = sorted[0].rankValue;
-            const uniqueSuits = new Set();
-            for(let card of sorted) {
-                if(card.rankValue !== targetRank) {
-                    isSet = false;
-                    break;
-                }
-                uniqueSuits.add(card.suitLabel);
-            }
-            // A valid set cannot duplicate the same suit icon
-            if(isSet && uniqueSuits.size === sorted.length) return "Set";
-
-            return "Invalid";
-        }
-
-        function executeDeclare() {
-            // Check if there are unassigned pool cards remaining outside of melds
-            if(cardPool.length > 0) {
-                alert(`Declaring Failed! You still have ${cardPool.length} unassigned cards left in your pool. Every card must belong to a group before declaring!`);
-                return;
-            }
-
-            let sequenceCount = 0;
-            let invalidGroupCount = 0;
-
-            cardGroups.forEach(group => {
-                const status = validateGroupStructure(group);
-                if(status === "Sequence") sequenceCount++;
-                if(status === "Invalid") invalidGroupCount++;
-            });
-
-            // Standard Indian Rummy Rule Validation Trigger Check
-            if(invalidGroupCount > 0) {
-                alert("Declaration Rejected! You have grouped cards, but some melds do not form valid sequences or sets. Re-check your cards.");
-            } else if(sequenceCount < 2) {
-                alert(`Declaration Rejected! You formed valid sets, but you only have ${sequenceCount} Sequence. Indian Rummy requires at least 2 valid sequences to win!`);
-            } else {
-                alert("🎉 CONGRATULATIONS! Valid Declaration! You successfully matched all 13 cards into structural sets and sequences. You win the game!");
-                initGame(); // Reset board cleanly on success
-            }
-        }
-
-        function updateStatus(msg) {
-            document.getElementById("game-status").innerText = msg;
-        }
-
-        // Initialize engine dynamically
-        initGame();
     </script>
 </body>
 </html>
